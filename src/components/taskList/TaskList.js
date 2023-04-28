@@ -5,6 +5,7 @@ import ErrorMessage from "../errorMessage/ErrorMessage";
 import useTaskService from "../../services/useTaskService";
 import SetContent from "../../utils/setContent";
 import "./TaskList.scss";
+import {motion} from "framer-motion";
 const setContent = (process,Component,newItemLoading)=>{
     switch (process){
         case 'waiting':
@@ -21,8 +22,6 @@ const setContent = (process,Component,newItemLoading)=>{
 }
 
 const TaskList = (props) => {
-
-    const [taskList, setTaskList] = useState([]);
     const [newItemLoading, setnewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [taskEnded, setTaskEnded] = useState(false);
@@ -42,7 +41,7 @@ const TaskList = (props) => {
         if (newTaskList.length < 9) {
             ended = true;
         }
-        setTaskList([...taskList, ...newTaskList]);
+        props.setTaskList([...props.taskList, ...newTaskList]);
         setnewItemLoading(false);
         setOffset(offset + 9);
         setTaskEnded(ended);
@@ -59,7 +58,12 @@ const TaskList = (props) => {
 
             return(
                 <CSSTransition key={item.id} timeout={350} classNames="task__item">
-                    <li
+                    <motion.li
+                        initial={{opacity:0,boxShadow:"0px 4px 4px rgba(0, 0, 0, 0.25)"}}
+                        animate={{opacity:1}}
+                        transition={{duration:0.1,ease:'easeInOut'}}
+                        whileHover={{y:-10,boxShadow:"0px 4px 15px rgba(0, 0, 0, 0.6)"}}
+
                     className="task__item"
                     tabIndex={0}
                     ref={el=>itemRefs.current[i] =el}
@@ -74,7 +78,7 @@ const TaskList = (props) => {
                             <div className="task__item_header-username">{item.username}</div>
                         </div>
                         <div className="task__item_decription">{item.description}</div>
-                    </li>
+                    </motion.li>
                 </CSSTransition>
             )
         })
@@ -88,18 +92,18 @@ const TaskList = (props) => {
     }
 
     const elements = useMemo(() => {
-        return SetContent(process,() => renderItems(taskList),newItemLoading)
+        return SetContent(process,() => renderItems(props.taskList),newItemLoading)
     },[process]);
     return (
         <div className="task__list">
             {elements}
-            <button
+            <motion.button
                 disabled={newItemLoading}
                 style={{'display' : taskEnded ? 'none' : 'block'}}
                 className="button button__main button__long"
                 onClick={() => onRequest(offset)}>
                 <div className="inner">load more</div>
-            </button>
+            </motion.button>
         </div>
     )
 };

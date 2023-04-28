@@ -64,7 +64,8 @@ const useTaskService = () => {
         const res = await PUT(task);
     }
     const deleteTaskById = async (id)=>{
-        const res = await DELETE(id);
+       // const res = await DELETE(id);
+        mockTask.splice(id,1)
     }
 
     return{
