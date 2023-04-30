@@ -29,6 +29,8 @@ const TaskList = (props) => {
     const itemRefs = useRef([]);
     useEffect(() => {
         onRequest(offset,true);
+        const token = localStorage.getItem('token');
+        if (token) console.log(token);
     }, []);
     const onRequest = (offset,initial) =>{
         initial ? setnewItemLoading(false):setnewItemLoading(true);

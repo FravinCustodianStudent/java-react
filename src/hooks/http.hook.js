@@ -1,8 +1,25 @@
 import {useCallback, useState} from "react";
+import axios from "axios";
 
 export const useHttp = () => {
     const [process,setProcess] = useState('waiting');
+    const baseUrl = "http://localhost:8080";
+    function delay(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
+    }
+    const GETAuthentication = useCallback(async (body)=>{
+        setProcess('loading')
+        try {
+            const obj = JSON.parse(body);
+            const username = obj["login"];
+            const password = obj["password"];
 
+            return axios.post(baseUrl+`/login?username=${username}&password=${password}`);
+        }catch (e){
+            setProcess('error');
+            throw e;
+        }
+    },[]);
 
     const GET = useCallback(async (body,offset)=>{
         //TODO: Redirect if no token presented
@@ -33,7 +50,6 @@ export const useHttp = () => {
             //TODO: Redirect if no token presented
             const token = 'eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2ODIzNzAwMDAsInJvbGUiOiJVU0VSIiwidXNlcm5hbWUiOiIxIn0.BPZSaDwFzRsJcptHY2ZUUWhd9WIbsDhrX_ycxpWieYEcx3a8dT1kIvPYT62uacwGyJ9Q2OWM-8u3IOXD_iqiNg';
             setProcess('loading');
-
             try {
                 const request = new XMLHttpRequest();
                 const url = 'http://localhost:8080/user';
@@ -113,7 +129,7 @@ export const useHttp = () => {
     const clearError = useCallback(() => {
         setProcess('loading');
     }, []);
-    return {process, setProcess, POST, PUT, GET, DELETE, clearError}
+    return {process, setProcess, POST, PUT, GET, DELETE, clearError,GETAuthentication}
 
 
 }
