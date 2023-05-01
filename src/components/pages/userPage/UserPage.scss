@@ -1,0 +1,15 @@
+
+.user{
+  &__content{
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: 1000px 475px;
+    column-gap: 25px;
+    align-items: start;
+    &__lists{
+      display: grid;
+      grid-template-columns: 500px 500px;
+      align-items: start;
+    }
+  }
+}

@@ -2,23 +2,21 @@ import {useCallback, useState} from "react";
 import axios from "axios";
 
 export const useHttp = () => {
-    const [process,setProcess] = useState('waiting');
-    const baseUrl = "http://localhost:8080";
-    function delay(time) {
-        return new Promise(resolve => setTimeout(resolve, time));
-    }
-    const GETAuthentication = useCallback(async (body)=>{
-        setProcess('loading')
-        try {
-            const obj = JSON.parse(body);
-            const username = obj["login"];
-            const password = obj["password"];
+    const [process, setProcess] = useState('waiting');
 
-            return axios.post(baseUrl+`/login?username=${username}&password=${password}`);
-        }catch (e){
-            setProcess('error');
-            throw e;
+    const baseUrl = "http://localhost:8080";
+
+    // function delay(time) {
+    //     return new Promise(resolve => setTimeout(resolve, time));
+    // }
+
+    const CreateUser = (requestBody)=>{
+    setProcess('loading');
+    return axios.post(baseUrl + '/users/create', requestBody);
         }
+    const GETAuthentication = useCallback(async (requestBody)=>{
+        setProcess('loading')
+        return axios.post(baseUrl+`/login`,requestBody);
     },[]);
 
     const GET = useCallback(async (body,offset)=>{
@@ -129,7 +127,7 @@ export const useHttp = () => {
     const clearError = useCallback(() => {
         setProcess('loading');
     }, []);
-    return {process, setProcess, POST, PUT, GET, DELETE, clearError,GETAuthentication}
+    return {process, setProcess, POST, PUT, GET, DELETE, clearError,GETAuthentication,CreateUser}
 
 
 }

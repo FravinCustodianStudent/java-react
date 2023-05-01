@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import './Header.scss'
 import {Link, NavLink} from "react-router-dom";
-import {motion} from "framer-motion";
+import {AnimatePresence, motion} from "framer-motion";
+import {UserContext} from "../app/App";
 const containerVariants = {
     hidden:{
         opacity:0,
@@ -21,7 +22,12 @@ const containerVariants = {
         }
     }
 }
-const Header = ({props}) => {
+const Header = () => {
+    const { user } = useContext(UserContext);
+    useEffect(() => {
+        console.log(user);
+    }, [user]);
+
     return (
         <header className="header">
             <h1 className="header__title">
@@ -31,15 +37,22 @@ const Header = ({props}) => {
 
             </h1>
             <nav className="header__menu">
-                <ul>
+                <AnimatePresence>
+                    {user === null ? <motion.ul
+                        initial={{opacity:0}}
+                        animate={{opacity:1}}
+                        transition={{duration:0.3}}
+                        exit={{opacity:0}}
+                    >
+
                     <motion.li
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="onHover"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        whileHover="onHover"
                     ><NavLink className={(navData)=>
-                                     (navData.isActive ? 'active' : '') }
-                                 to="/">Головна</NavLink></motion.li>
+                        (navData.isActive ? 'active' : '') }
+                              to="/">Головна</NavLink></motion.li>
                     /
                     <motion.li
                         variants={containerVariants}
@@ -56,7 +69,40 @@ const Header = ({props}) => {
                         whileHover="onHover"
                     ><NavLink className={(navData)=>
                         (navData.isActive ? 'active' : '') }  to="/register">Реєстрація</NavLink></motion.li>
-                </ul>
+                </motion.ul> : <motion.ul
+                        initial={{opacity:0}}
+                        animate={{opacity:1}}
+                        transition={{duration:0.3}}
+                        exit={{opacity:0}}
+                    >
+
+                    <motion.li
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        whileHover="onHover"
+                    ><NavLink className={(navData)=>
+                        (navData.isActive ? 'active' : '') }
+                              to="/">Головна</NavLink></motion.li>
+                    /
+                    <motion.li
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        whileHover="onHover"
+                    ><NavLink className={(navData)=>
+                        (navData.isActive ? 'active' : '') }  to="/user">Аккаунт</NavLink></motion.li>
+                    /
+                    <motion.li
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        whileHover="onHover"
+                    ><NavLink className={(navData)=>
+                        (navData.isActive ? 'active' : '') }  to="/logout">Вихід</NavLink></motion.li>
+                </motion.ul>}
+                </AnimatePresence>
+
             </nav>
         </header>
     );

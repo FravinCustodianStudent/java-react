@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import TaskList from "../../taskList/TaskList";
 import TaskInfo from "../../taskInfo/TaskInfo";
 import ErrorBoundary from "../../errorBoundry/ErrorBoundary";
-
+import { motion} from "framer-motion";
 const MainPage = () => {
     const [selectedTask,setTask] = useState(1);
     const [taskList, setTaskList] = useState([]);
@@ -10,8 +10,13 @@ const MainPage = () => {
         setTask(id);
     }
     return (
-        <>
-            <div className="task__content">
+
+            <motion.div className="task__content"
+                        initial={{opacity:0,x:0}}
+                        animate={{opacity:1}}
+                        transition={{duration:0.5}}
+                        exit={{opacity:0,x:150}}
+            >
 
                 <ErrorBoundary>
                     <TaskList OnTaskSelected={OnTaskSelected} taskList={taskList} setTaskList={setTaskList}/>
@@ -20,8 +25,7 @@ const MainPage = () => {
                     <TaskInfo taskId={selectedTask} taskList={taskList} setTaskList={setTaskList}/>
                 </ErrorBoundary>
 
-            </div>
-        </>
+            </motion.div>
 
     );
 };

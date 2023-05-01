@@ -3,7 +3,7 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 
 import {Button, TextField} from "@mui/material";
-import {motion} from "framer-motion";
+import {AnimatePresence, motion} from "framer-motion";
 import Spinner from "../../spinners/Spiners";
 import {useNavigate} from "react-router-dom";
 import {useHttp} from "../../../hooks/http.hook";
@@ -16,8 +16,8 @@ const validationSchema=Yup.object({
         .required("обов'язкове поле для заповнення")
         .email("неправильний формат пошти")
 })
-const Register = ({props}) => {
-    const {GETAuthentication,process,setProcess} = useHttp();
+const Register = () => {
+    const {CreateUser,process,setProcess} = useHttp();
     const [errorMessage,setErrorMessage] = useState(null);
     const navigate = useNavigate();
     useEffect(()=>{
@@ -32,20 +32,18 @@ const Register = ({props}) => {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
-            const json = JSON.stringify(values, null, 2);
             setErrorMessage(null);
             //refactor to registration
-            GETAuthentication(json)
+            CreateUser(values)
                 .then(res=>{
-                    console.log(process)
-                    localStorage.setItem('token',res.data)
-                    setProcess("confirmed")
-                    console.log(process)
-                    navigate('/');
+                    setProcess("confirmed");
+                    navigate('/login');
+
                 })
                 .catch(err=>{
+                    setProcess("confirmed");
                     console.log(err)
-                    setErrorMessage(err.message)
+                    setErrorMessage(err.response.data.description)
                 });
         },
     });
@@ -98,7 +96,10 @@ const Register = ({props}) => {
                 <Button color="primary" variant="contained" fullWidth type="submit">
                     Зареєструватися
                 </Button>
-                {process === "loading" ? <Spinner/> : null}
+                <AnimatePresence>
+                    {process === "loading" ? <Spinner/> : null}
+                </AnimatePresence>
+
             </form>
         </motion.div>
     );

@@ -1,16 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import * as Yup from 'yup';
 import {useFormik} from "formik";
 import "./login.scss";
 import {Button, TextField} from "@mui/material";
 import {useHttp} from "../../../hooks/http.hook";
 import Spinner from "../../spinners/Spiners";
-import {motion} from "framer-motion";
+import {AnimatePresence, motion} from "framer-motion";
 import {useNavigate} from "react-router-dom";
+import {UserContext} from "../../app/App";
 
 
 const validationSchema=Yup.object({
-    login: Yup.string()
+    username: Yup.string()
         .required("обов'язкове поле для заповнення"),
     password: Yup.string()
         .required("обов'язкове поле для заповнення")
@@ -19,29 +20,30 @@ const Login = ({props}) => {
     const {GETAuthentication,process,setProcess} = useHttp();
     const [errorMessage,setErrorMessage] = useState(null);
     const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
+    const setAuthentification = (user,token) =>{
+        setUser(user);
+        localStorage.setItem('token',token);
+    }
     useEffect(()=>{
        setProcess("confirmed");
     },[]);
     const formik = useFormik({
         initialValues: {
-            login: '',
+            username: '',
             password: '',
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
-            const json = JSON.stringify(values, null, 2);
+        onSubmit:  (values) => {
             setErrorMessage(null);
-            GETAuthentication(json)
-                .then(res=>{
-                    console.log(process)
-                    localStorage.setItem('token',res.data)
-                    setProcess("confirmed")
-                    console.log(process)
-                    navigate('/');
-                })
+            GETAuthentication(values)
+                .then((res)=> setAuthentification(res.data['user'],res.data['token']))
+                .then(setProcess("confirmed"))
+                .then(navigate('/'))
                 .catch(err=>{
                     console.log(err)
-                    setErrorMessage(err.message)
+                    setProcess("confirmed")
+                    setErrorMessage(err.response.data.description)
             });
         },
     });
@@ -56,13 +58,13 @@ const Login = ({props}) => {
                 <TextField
                     className="form-input"
                     fullWidth
-                    id="login"
-                    name="login"
+                    id="username"
+                    name="username"
                     label="Логін"
-                    value={formik.values.login}
+                    value={formik.values.username}
                     onChange={formik.handleChange}
-                    error={formik.touched.login && Boolean(formik.errors.login)}
-                    helperText={formik.touched.login && formik.errors.login}
+                    error={formik.touched.username && Boolean(formik.errors.username)}
+                    helperText={formik.touched.username && formik.errors.username}
                 />
                 <TextField
                     fullWidth
@@ -81,7 +83,9 @@ const Login = ({props}) => {
                         color="primary" variant="contained" fullWidth type="submit">
                     Зайти
                 </Button>
-                {process === "loading" ? <Spinner/> : null}
+                <AnimatePresence>
+                    {process === "loading" ? <Spinner/> : null}
+                </AnimatePresence>
             </form>
         </motion.div>
     );
