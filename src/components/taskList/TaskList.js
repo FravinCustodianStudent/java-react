@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import Spinner from "../spinners/Spiners";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -6,6 +6,7 @@ import useTaskService from "../../services/useTaskService";
 import SetContent from "../../utils/setContent";
 import "./TaskList.scss";
 import {motion} from "framer-motion";
+import {UserContext} from "../app/App";
 const setContent = (process,Component,newItemLoading)=>{
     switch (process){
         case 'waiting':
@@ -28,9 +29,8 @@ const TaskList = (props) => {
     const {process,setProcess,getAllTask} = useTaskService();
     const itemRefs = useRef([]);
     useEffect(() => {
-        onRequest(true);
-        const token = localStorage.getItem('token');
-        if (token) console.log(token);
+            onRequest(true);
+
     }, []);
     const onRequest = (initial) =>{
         initial ? setnewItemLoading(false):setnewItemLoading(true);

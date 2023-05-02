@@ -1,27 +1,35 @@
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {Button, InputLabel, MenuItem, Select, TextField} from "@mui/material";
-import React from "react";
+import React, {useContext, useEffect} from "react";
 import "./RequestedTaskInfo.scss";
+import useTaskService from "../../../services/useTaskService";
 
 const validationSchema=Yup.object({
-    username: Yup.string()
+    name: Yup.string()
         .required("обов'язкове поле для заповнення"),
     description: Yup.string()
         .required("обов'язкове поле для заповнення"),
     tags: Yup.string().required("Обов'язково виберите тег")
 })
 
-const RequestedTaskInfo = () =>{
+const RequestedTaskInfo = (props) =>{
+    const {  createTask} = useTaskService();
+
+
     const formik = useFormik({
         initialValues: {
-            username: '',
+            name: '',
             description: '',
             tags:''
         },
         validationSchema: validationSchema,
         onSubmit:  (values) => {
-            console.log(values)
+            createTask(values)
+                .then(res=>{
+                    const task = res.data;
+                    props.setTaskList(...props.TaskList,...task);
+                })
         },
     });
     return (
@@ -32,13 +40,13 @@ const RequestedTaskInfo = () =>{
                 <TextField
                     className="form-input"
                     fullWidth
-                    id="username"
-                    name="username"
+                    id="name"
+                    name="name"
                     label="Назва завдання"
                     value={formik.values.username}
                     onChange={formik.handleChange}
-                    error={formik.touched.username && Boolean(formik.errors.username)}
-                    helperText={formik.touched.username && formik.errors.username}
+                    error={formik.touched.name && Boolean(formik.errors.name)}
+                    helperText={formik.touched.name && formik.errors.name}
                 />
                 <TextField
                     className="form-input"

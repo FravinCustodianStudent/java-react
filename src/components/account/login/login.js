@@ -37,9 +37,11 @@ const Login = ({props}) => {
         onSubmit:  (values) => {
             setErrorMessage(null);
             GETAuthentication(values)
-                .then((res)=> setAuthentification(res.data['user'],res.data['token']))
-                .then(setProcess("confirmed"))
-                .then(navigate('/'))
+                .then((res)=> {
+                    setAuthentification(res.data['user'],res.data['token'])
+                    setProcess("confirmed")
+                    navigate('/')
+                })
                 .catch(err=>{
                     console.log(err)
                     setProcess("confirmed")

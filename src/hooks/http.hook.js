@@ -1,11 +1,13 @@
 import {useCallback, useContext, useState} from "react";
 import axios from "axios";
 import {UserContext} from "../components/app/App";
+import {useNavigate} from "react-router-dom";
 
 export const useHttp = () => {
     const [process, setProcess] = useState('waiting');
     const {user } = useContext(UserContext);
     const baseUrl = "http://localhost:8080";
+    const navigate = useNavigate();
     //const baseUrl = "https://knu-help-wanted.herokuapp.com";
     // function delay(time) {
     //     return new Promise(resolve => setTimeout(resolve, time));
@@ -20,6 +22,7 @@ export const useHttp = () => {
         return axios.post(baseUrl+`/login`,requestBody);
     },[]);
 
+
     const baseHeaders = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer '+ localStorage.getItem('token'),
@@ -33,7 +36,7 @@ export const useHttp = () => {
 
         //TODO: Redirect if no token presented
         if (user === null){
-
+            navigate('/login');
         }
         setProcess('loading');
             return axios.get(baseUrl+route,{
@@ -46,7 +49,7 @@ export const useHttp = () => {
     const POST = useCallback(  (body,route) => {
             //TODO: Redirect if no token presented
             if (user === null){
-
+                navigate('/login');
             }
             setProcess('loading');
 
@@ -69,7 +72,7 @@ export const useHttp = () => {
     const DELETE = useCallback(  (route) => {
             //TODO: Redirect if no token presented
             if (user === null){
-
+                navigate('/login');
             }
             return axios.delete(baseUrl+route,{
                 headers:{

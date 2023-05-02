@@ -1,8 +1,9 @@
 import React, {useContext, useEffect} from 'react';
 import './Header.scss'
-import {Link, NavLink} from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
 import {AnimatePresence, motion} from "framer-motion";
 import {UserContext} from "../app/App";
+import useTaskService from "../../services/useTaskService";
 const containerVariants = {
     hidden:{
         opacity:0,
@@ -23,11 +24,26 @@ const containerVariants = {
     }
 }
 const Header = () => {
-    const { user } = useContext(UserContext);
+    const navigate = useNavigate();
+    const { user,setUser } = useContext(UserContext);
+    const {getUserByToken,logout} = useTaskService();
     useEffect(() => {
-        console.log(user);
+        if (user == null){
+            const token = localStorage.getItem('token');
+            if (token){
+                getUserByToken()
+                    .then(res=>{
+                        setUser(res.data);
+                    })
+            }
+        }
     }, [user]);
+    const onButtonPressed = () =>{
+        logout();
+        navigate('/login');
+        setUser(null)
 
+    }
     return (
         <header className="header">
             <h1 className="header__title">
@@ -45,15 +61,6 @@ const Header = () => {
                         exit={{opacity:0}}
                     >
 
-                    <motion.li
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        whileHover="onHover"
-                    ><NavLink className={(navData)=>
-                        (navData.isActive ? 'active' : '') }
-                              to="/">Головна</NavLink></motion.li>
-                    /
                     <motion.li
                         variants={containerVariants}
                         initial="hidden"
@@ -98,8 +105,9 @@ const Header = () => {
                         initial="hidden"
                         animate="visible"
                         whileHover="onHover"
-                    ><NavLink className={(navData)=>
-                        (navData.isActive ? 'active' : '') }  to="/logout">Вихід</NavLink></motion.li>
+                    ><a onClick={()=>{
+                        onButtonPressed()
+                    }}>Вихід</a></motion.li>
                 </motion.ul>}
                 </AnimatePresence>
 
