@@ -16,10 +16,14 @@ const TaskInfo = (props) => {
         if (!taskId){
             return;
         }
+
         clearError();
         getTaskById(taskId)
             .then((task)=>onTaskLoaded(task))
             .then(()=>setProcess('confirmed'))
+            .catch(err=>{
+                console.log(err)
+            })
 
 
 
@@ -27,14 +31,8 @@ const TaskInfo = (props) => {
     const onButtonPressed = (id) =>{
         //TODO: when implemented - expand functionality by remove task from list and choose another one task
         setProcess('loading');
-                    //POST(task).then()
-        deleteTaskById(id)
-            .then(props.setTaskList(props.taskList.filter(i=>i.id !== id)))
-            .then(setProcess('confirmed'))
-            .catch((e)=>{
-                setProcess('error');
-                console.log(e)
-            })
+
+
     }
 
     const onTaskLoaded = (task) =>{

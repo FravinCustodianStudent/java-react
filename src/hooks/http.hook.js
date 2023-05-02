@@ -1,11 +1,12 @@
-import {useCallback, useState} from "react";
+import {useCallback, useContext, useState} from "react";
 import axios from "axios";
+import {UserContext} from "../components/app/App";
 
 export const useHttp = () => {
     const [process, setProcess] = useState('waiting');
-
+    const {user } = useContext(UserContext);
     const baseUrl = "http://localhost:8080";
-
+    //const baseUrl = "https://knu-help-wanted.herokuapp.com";
     // function delay(time) {
     //     return new Promise(resolve => setTimeout(resolve, time));
     // }
@@ -19,108 +20,62 @@ export const useHttp = () => {
         return axios.post(baseUrl+`/login`,requestBody);
     },[]);
 
-    const GET = useCallback(async (body,offset)=>{
-        //TODO: Redirect if no token presented
-        const token = 'eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2ODIzNzAwMDAsInJvbGUiOiJVU0VSIiwidXNlcm5hbWUiOiIxIn0.BPZSaDwFzRsJcptHY2ZUUWhd9WIbsDhrX_ycxpWieYEcx3a8dT1kIvPYT62uacwGyJ9Q2OWM-8u3IOXD_iqiNg';
-        setProcess('loading');
-        try {
-            const request = new XMLHttpRequest();
-            const url = 'http://localhost:8080/user';
+    const baseHeaders = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+ localStorage.getItem('token'),
+            'Access-Control-Allow-Origin' : '*',
+            'Access-Control-Allow-Methods' : 'GET, POST, OPTIONS, PUT',
+            'Access-Control-Allow-Headers': 'X-Requested-With, content-type',
+            'Access-Control-Allow-Credentials': 'true',
+    }
 
-            request.open('GET', url);
-            request.setRequestHeader('Content-Type', 'application/json');
-            //request.setRequestHeader('Access-Control-Allow-Origin', '*');
-            request.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
-            request.setRequestHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
-            request.setRequestHeader('Access-Control-Allow-Credentials', 'true');
-            request.setRequestHeader('Authorization', 'Bearer ' + token )
-            await request.send(body);
-            const response = request.response;
-            return response.json();
-        }catch (e){
-            setProcess('error');
-            throw e;
+    const GET = useCallback(async (params,route)=>{
+
+        //TODO: Redirect if no token presented
+        if (user === null){
+
         }
+        setProcess('loading');
+            return axios.get(baseUrl+route,{
+                params: {...params},
+                headers: baseHeaders
+            });
     },
         []);
     
-    const POST = useCallback( async (body) => {
+    const POST = useCallback(  (body,route) => {
             //TODO: Redirect if no token presented
-            const token = 'eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2ODIzNzAwMDAsInJvbGUiOiJVU0VSIiwidXNlcm5hbWUiOiIxIn0.BPZSaDwFzRsJcptHY2ZUUWhd9WIbsDhrX_ycxpWieYEcx3a8dT1kIvPYT62uacwGyJ9Q2OWM-8u3IOXD_iqiNg';
-            setProcess('loading');
-            try {
-                const request = new XMLHttpRequest();
-                const url = 'http://localhost:8080/user';
-                request.open('POST', url);
-                request.setRequestHeader('Content-Type', 'application/json');
-                //request.setRequestHeader('Access-Control-Allow-Origin', '*');
-                request.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
-                request.setRequestHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
-                request.setRequestHeader('Access-Control-Allow-Credentials', 'true');
-                request.setRequestHeader('Authorization', 'Bearer ' + token )
-                await request.send(body);
-                const response = request.response;
-                return response.json();
+            if (user === null){
 
-            }catch (e){
-                setProcess('error');
-                throw e;
             }
+            setProcess('loading');
+
+            return axios.post(baseUrl+route,body,{
+                headers:baseHeaders,
+            })
 
         },
         [],
     );
-    const PUT = useCallback( async (body) => {
+    const PUT = useCallback(  (body) => {
             //TODO: Redirect if no token presented
             const token = 'eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2ODIzNzAwMDAsInJvbGUiOiJVU0VSIiwidXNlcm5hbWUiOiIxIn0.BPZSaDwFzRsJcptHY2ZUUWhd9WIbsDhrX_ycxpWieYEcx3a8dT1kIvPYT62uacwGyJ9Q2OWM-8u3IOXD_iqiNg';
             setProcess('loading');
 
-            try {
-                const request = new XMLHttpRequest();
-                const url = 'http://localhost:8080/user';
-                request.open('PUT', url);
-                request.setRequestHeader('Content-Type', 'application/json');
-                //request.setRequestHeader('Access-Control-Allow-Origin', '*');
-                request.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
-                request.setRequestHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
-                request.setRequestHeader('Access-Control-Allow-Credentials', 'true');
-                request.setRequestHeader('Authorization', 'Bearer ' + token )
-                await request.send(body);
-                const response = request.response;
-                return response.json();
-
-            }catch (e){
-                setProcess('error');
-                throw e;
-            }
 
         },
         [],
     );
-    const DELETE = useCallback( async (body) => {
+    const DELETE = useCallback(  (route) => {
             //TODO: Redirect if no token presented
-            const token = 'eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2ODIzNzAwMDAsInJvbGUiOiJVU0VSIiwidXNlcm5hbWUiOiIxIn0.BPZSaDwFzRsJcptHY2ZUUWhd9WIbsDhrX_ycxpWieYEcx3a8dT1kIvPYT62uacwGyJ9Q2OWM-8u3IOXD_iqiNg';
-            setProcess('loading');
+            if (user === null){
 
-            try {
-                const request = new XMLHttpRequest();
-                const url = 'http://localhost:8080/user';
-                request.open('DELETE', url);
-                request.setRequestHeader('Content-Type', 'application/json');
-                //request.setRequestHeader('Access-Control-Allow-Origin', '*');
-                request.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
-                request.setRequestHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
-                request.setRequestHeader('Access-Control-Allow-Credentials', 'true');
-                request.setRequestHeader('Authorization', 'Bearer ' + token )
-                await request.send(body);
-                const response = request.response;
-                return response.json();
-
-            }catch (e){
-                setProcess('error');
-                throw e;
             }
-
+            return axios.delete(baseUrl+route,{
+                headers:{
+                    Authorization : localStorage.getItem('token')
+                }
+            })
         },
         [],
     );

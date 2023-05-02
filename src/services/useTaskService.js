@@ -1,7 +1,7 @@
 import {useHttp} from "../hooks/http.hook";
 
 const useTaskService = () => {
-    const { process, setProcess, POST, PUT, GET, DELETE, clearError} = useHttp();
+    const { process, setProcess, POST, GET, DELETE, clearError} = useHttp();
 
     const mockTask = [
         {id:1,
@@ -38,39 +38,28 @@ const useTaskService = () => {
 
     ]
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
     //TODO: Refactor this peace of shit when api will be ready
-    const getAllTask = async (body,offset)=>{
-        //const res = await GET(body,offset);
-        //return res;
-        //await new Promise(r => setTimeout(r, 2000));
-        return mockTask;
+    const getAllTask = (currentPage)=>{
+        const request={
+            page:currentPage,
+            size:9
+        }
+        return POST(request,"/tasks",);
     }
-    const getTaskById = async (id)=>{
-        //const res = await GET(id)
-        //return res;
-        const result = mockTask
-            .find((item)=> item.id === id)
-        //await new Promise(r => setTimeout(r, 2000));
-        return result ;
-    }
-    const createTask = async (task)=>{
-        const res = await POST(task);
+    const getTaskById = (id)=>{
+        return GET(null,`/tasks/${id}/get`) ;
     }
 
-    const updateTask = async (task)=>{
-        const res = await PUT(task);
+    const addVolunteerToTask = (id) =>{
+        return GET(null,`/${id}/addVolunteer`)
     }
-    const deleteTaskById = async (id)=>{
-       // const res = await DELETE(id);
-        mockTask.splice(id,1)
+    const deleteVolunteerFromTask = (id) =>{
+        return DELETE(null,`/${id}/deleteVolunteer`)
     }
 
     return{
-        process, setProcess, POST, PUT, GET, DELETE, clearError,
-        getAllTask,getTaskById,createTask,updateTask,deleteTaskById
+        process, setProcess, POST,  GET, DELETE, clearError,
+        getAllTask,getTaskById
     }
 
 };

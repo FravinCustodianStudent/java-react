@@ -23,33 +23,36 @@ const setContent = (process,Component,newItemLoading)=>{
 
 const TaskList = (props) => {
     const [newItemLoading, setnewItemLoading] = useState(false);
-    const [offset, setOffset] = useState(210);
     const [taskEnded, setTaskEnded] = useState(false);
+    const [page,setPage] = useState(0);
     const {process,setProcess,getAllTask} = useTaskService();
     const itemRefs = useRef([]);
     useEffect(() => {
-        onRequest(offset,true);
+        onRequest(true);
         const token = localStorage.getItem('token');
         if (token) console.log(token);
     }, []);
-    const onRequest = (offset,initial) =>{
+    const onRequest = (initial) =>{
         initial ? setnewItemLoading(false):setnewItemLoading(true);
-        getAllTask(offset)
+        getAllTask(page)
             .then(onCharListLoaded)
             .then(()=>setProcess('confirmed'))
+            .catch(err=> console.log(err))
     }
-    const onCharListLoaded = async(newTaskList) => {
+    const onCharListLoaded = async(res) => {
+        console.log(res)
+        const newTaskList = res.data.tasks;
         let ended = false;
         if (newTaskList.length < 9) {
             ended = true;
+            setPage(page+1);
         }
         props.setTaskList([...props.taskList, ...newTaskList]);
         setnewItemLoading(false);
-        setOffset(offset + 9);
+
         setTaskEnded(ended);
     }
     const focusOnItem = (id) =>{
-        console.log(itemRefs.current)
         itemRefs.current.forEach(item=>item.classList.remove('task__item_selected'))
         itemRefs.current[id].classList.add('task__item_selected');
         itemRefs.current[id].focus();
@@ -76,10 +79,10 @@ const TaskList = (props) => {
                     >
                         <div className="task__item_select-line"></div>
                         <div className="task__item_header">
-                            <div className="task__item_header-name">{item.taskName}</div>
-                            <div className="task__item_header-username">{item.username}</div>
+                            <div className="task__item_header-name">{item.name}</div>
+                            <div className="task__item_header-username">{item.author.username}</div>
                         </div>
-                        <div className="task__item_decription">{item.description}</div>
+                        <div className="task__item_decription">{item.shortDescription}</div>
                     </motion.li>
                 </CSSTransition>
             )
@@ -103,7 +106,7 @@ const TaskList = (props) => {
                 disabled={newItemLoading}
                 style={{'display' : taskEnded ? 'none' : 'block'}}
                 className="button button__main button__long"
-                onClick={() => onRequest(offset)}>
+                onClick={() => onRequest()}>
                 <div className="inner">load more</div>
             </motion.button>
         </div>

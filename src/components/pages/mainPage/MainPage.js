@@ -4,7 +4,7 @@ import TaskInfo from "../../taskInfo/TaskInfo";
 import ErrorBoundary from "../../errorBoundry/ErrorBoundary";
 import { motion} from "framer-motion";
 const MainPage = () => {
-    const [selectedTask,setTask] = useState(1);
+    const [selectedTask,setTask] = useState(2);
     const [taskList, setTaskList] = useState([]);
     const OnTaskSelected=(id)=>{
         setTask(id);
