@@ -9,17 +9,15 @@ const UserTaskInfo = (props) =>{
     const { addExecutor,finishTask} = useTaskService();
     const [userTaskProcess, setUserTaskProcess] = useState("confirmed");
     const { user } = useContext(UserContext);
+    const itemRefs = props.itemRefs;
+
     useEffect(() => {
     }, [props.currentTask]);
     const onAddExecutorPressed = (taskId,id) =>{
         setUserTaskProcess("loading");
         addExecutor(taskId,id)
             .then(()=>{
-                let task = props.currentTask;
-                task = task.volunteers.filter((elem)=>{
-                   return elem.id !== id;
-                });
-                props.setcurrentTask(task);
+                props.setcurrentTask(props.currentTask);
                 setUserTaskProcess("confirmed")
             })
     }
@@ -27,12 +25,11 @@ const UserTaskInfo = (props) =>{
         finishTask(props.currentTask.id)
             .then(()=>{
                 let tasks = props.userTaskList;
-                console.log(props.currentTask)
-                console.log(tasks)
                 tasks = tasks.filter((elem)=>{
                     return elem.id !== props.currentTask.id
                 })
-                console.log(tasks)
+                itemRefs.current.forEach(item=>item.classList.remove('user__task__active'))
+
                 props.setUserTaskList(tasks);
             })
     }
@@ -40,7 +37,21 @@ const UserTaskInfo = (props) =>{
         const items = arr.map((item,i)=>{
             return(
                 <>
-                    {item.executor ? null :
+                    {item.executor ? <div className="task__manage__content__list__item">
+                            <div className="task__manage__content__list__item__username">{item.username}</div>
+                            <div className="task__manage__content__list__item__button">
+                                <Button
+                                    disabled={true}
+                                    variant="contained"
+                                    onClick={()=>{
+                                        onAddExecutorPressed(taskId,item.id);
+                                    }}
+                                    sx={{
+                                        width:130,
+                                        background:"#EBC259"
+                                    }}>Підтвердити</Button>
+                            </div>
+                        </div> :
                         <div className="task__manage__content__list__item">
                             <div className="task__manage__content__list__item__username">{item.username}</div>
                             <div className="task__manage__content__list__item__button">

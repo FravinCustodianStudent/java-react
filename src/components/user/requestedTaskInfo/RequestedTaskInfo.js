@@ -27,8 +27,15 @@ const RequestedTaskInfo = (props) =>{
         onSubmit:  (values) => {
             createTask(values)
                 .then(res=>{
-                    const task = res.data;
-                    props.setTaskList(...props.TaskList,...task);
+                    const task = [res.data];
+                    if (Array.isArray(props.TaskList)){
+                        const newArray = [...props.TaskList,...task]
+                        props.setTaskList(newArray);
+                    }else{
+                        const list = [props.TaskList]
+                        props.setTaskList(...list,...task);
+                    }
+
                 })
         },
     });

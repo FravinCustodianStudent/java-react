@@ -6,9 +6,9 @@ import {useNavigate} from "react-router-dom";
 export const useHttp = () => {
     const [process, setProcess] = useState('waiting');
     const {user } = useContext(UserContext);
-    const baseUrl = "http://localhost:8080";
+    //const baseUrl = "http://localhost:8080";
     const navigate = useNavigate();
-    //const baseUrl = "https://knu-help-wanted.herokuapp.com";
+    const baseUrl = "https://knu-help-wanted.herokuapp.com";
     // function delay(time) {
     //     return new Promise(resolve => setTimeout(resolve, time));
     // }
@@ -35,7 +35,7 @@ export const useHttp = () => {
     const GET = useCallback(async (params,route)=>{
 
         //TODO: Redirect if no token presented
-        if (user === null){
+        if (localStorage.getItem('token') === null){
             navigate('/login');
         }
         setProcess('loading');
@@ -48,7 +48,7 @@ export const useHttp = () => {
     
     const POST = useCallback(  (body,route) => {
             //TODO: Redirect if no token presented
-            if (user === null){
+            if (localStorage.getItem('token') === null){
                 navigate('/login');
             }
             setProcess('loading');
@@ -62,7 +62,6 @@ export const useHttp = () => {
     );
     const PUT = useCallback(  (body) => {
             //TODO: Redirect if no token presented
-            const token = 'eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2ODIzNzAwMDAsInJvbGUiOiJVU0VSIiwidXNlcm5hbWUiOiIxIn0.BPZSaDwFzRsJcptHY2ZUUWhd9WIbsDhrX_ycxpWieYEcx3a8dT1kIvPYT62uacwGyJ9Q2OWM-8u3IOXD_iqiNg';
             setProcess('loading');
 
 
@@ -71,7 +70,7 @@ export const useHttp = () => {
     );
     const DELETE = useCallback(  (route) => {
             //TODO: Redirect if no token presented
-            if (user === null){
+            if (localStorage.getItem('token') === null){
                 navigate('/login');
             }
             return axios.delete(baseUrl+route,{

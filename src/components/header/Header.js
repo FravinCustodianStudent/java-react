@@ -48,7 +48,7 @@ const Header = () => {
         <header className="header">
             <h1 className="header__title">
                 <Link to="/">
-                    <span>ДОБРИЙ</span> ПОРТАЛ
+                    <span>HELP</span> WANTED
                 </Link>
 
             </h1>

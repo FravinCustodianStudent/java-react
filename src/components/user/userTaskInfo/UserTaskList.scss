@@ -38,6 +38,7 @@
       &__list{
         display: flex;
         justify-content: space-between;
+        flex-direction: column;
         &__item{
           margin-top: 10px;
           width: 100%;

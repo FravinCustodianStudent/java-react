@@ -7,26 +7,33 @@ import Spinner from "../../spinners/Spiners";
 const UserTasksList = (props) =>{
     const { user } = useContext(UserContext);
     const {process,setProcess,getTasksCreatedByUser} = useTaskService();
-    const itemRefs = useRef([]);
+    const itemRefs = props.itemRefs;
     useEffect(() => {
         if (user!= null){
-            console.log(user)
-            getTasksCreatedByUser(user.id)
-                .then((res)=>{
-                    props.setTaskList(res.data.filter((elem)=>{
-                        return  !elem.finished
-                    }));
-                    console.log(res.data);
-                })
-                .catch(err=>console.log(err))
+            console.log(props.TaskList)
+            if (props.TaskList == null || props.TaskList.length===0){
+                getTasksCreatedByUser(user.id)
+                    .then((res)=>{
+                        props.setTaskList(res.data);
+                    })
+                    .catch(err=>console.log(err))
+            }
+
         }
-    }, [user]);
+    });
     const focusOnItem = (id) =>{
+        console.log(itemRefs.current);
+        itemRefs.current = itemRefs.current.filter(item=>{
+            return item != null;
+        })
         itemRefs.current.forEach(item=>item.classList.remove('user__task__active'))
         itemRefs.current[id].classList.add('user__task__active');
         itemRefs.current[id].focus();
     }
     const renderItems = (arr,OnTaskSelected) =>{
+        if (!Array.isArray(arr)){
+            arr = [arr]
+        }
         const items = arr.map((item,i)=>{
 
             return(
